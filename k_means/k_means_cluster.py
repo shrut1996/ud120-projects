@@ -43,6 +43,19 @@ data_dict = pickle.load( open("../final_project/final_project_dataset.pkl", "r")
 ### there's an outlier--remove it! 
 data_dict.pop("TOTAL", 0)
 
+salMin = 10000000
+salMax = 0
+for k in data_dict:
+    sal = data_dict[k]["salary"]
+    if sal != 'NaN':
+        if sal < salMin:
+            salMin = sal
+        if sal > salMax:
+            salMax = sal
+
+print "min:", salMin
+print "max:", salMax 
+
 
 ### the input features we want to use 
 ### can be any key in the person-level dictionary (salary, director_fees, etc.) 
@@ -53,6 +66,12 @@ features_list = [poi, feature_1, feature_2]
 data = featureFormat(data_dict, features_list )
 poi, finance_features = targetFeatureSplit( data )
 
+from sklearn.preprocessing import MinMaxScaler
+scl = MinMaxScaler()
+finance_features = scl.fit_transform(finance_features)
+import numpy as np
+features_test = np.array([[200000., 1000000.]])
+print scl.transform(features_test)
 
 ### in the "clustering with 3 features" part of the mini-project,
 ### you'll want to change this line to 
@@ -64,6 +83,10 @@ plt.show()
 
 ### cluster here; create predictions of the cluster labels
 ### for the data and store them to a list called pred
+
+from sklearn.cluster import KMeans
+cls = KMeans(n_clusters=2)
+pred = cls.fit(finance_features).predict(finance_features)
 
 
 
